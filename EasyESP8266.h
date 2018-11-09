@@ -99,9 +99,6 @@ Reactduino app([] () {
     system_username = _system_username.as<String>();
     system_password = _system_password.as<String>();
   }
-  WiFi.softAPdisconnect();
-  WiFi.disconnect();
-  WiFi.mode(WIFI_STA);
   WiFi.begin();
   app.delay(6000, wifiCheck);
   server.on("/setup", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
