@@ -1,5 +1,4 @@
 /*
-  IMPORTANT! THIS IS NOT A NORMAL LIBRARY! SEE README.md
   Board(s): ESP8266, ESP32 (Untested)
   Depends:
     - Reactduino: https://github.com/Reactduino/Reactduino
