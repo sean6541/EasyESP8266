@@ -24,7 +24,7 @@ String system_password = "";
 String new_ssid = "";
 String new_psk = "";
 
-EEPROMJson eejs(4096);
+EEPROMJson eejs(512);
 AsyncWebServer server(80);
 AsyncStaticWebHandler& static_srv(server.serveStatic("/", SPIFFS, "/www/"));
 
