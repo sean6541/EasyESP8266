@@ -167,6 +167,10 @@ Reactduino app([] () {
     request->send(200);
   });
   server.on("/setup", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!checkAuth(request)) {
+      request->send(401);
+      return;
+    }
     DynamicJsonBuffer requJB;
     JsonObject& requJ = requJB.parseObject(data);
     JsonVariant _system_username = requJ["system"]["username"];
@@ -188,7 +192,7 @@ Reactduino app([] () {
     }
     request->send(200);
     app.delay(2000, wifiSTA);
-  }).setFilter(ON_AP_FILTER);
+  });
   server.on("/reset/wifi", HTTP_POST, [] (AsyncWebServerRequest * request) {
     if (!checkAuth(request)) {
       request->send(401);
