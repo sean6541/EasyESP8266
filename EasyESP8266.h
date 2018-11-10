@@ -29,7 +29,7 @@ AsyncStaticWebHandler& static_srv(server.serveStatic("/", SPIFFS, "/www/"));
 void loadConfig() {
   EEPROM.begin(4096);
   String eeprom_string;
-  for (int i = 0; i < _size; ++i) {
+  for (int i = 0; i < 4096; ++i) {
     char eeprom_string_char = char(EEPROM.read(i));
     if (eeprom_string_char != 0) {
       eeprom_string += eeprom_string_char;
@@ -46,7 +46,7 @@ void loadConfig() {
 
 void clearConfig() {
   EEPROM.begin(4096);
-  for (int i = 0; i < _size + 1; i++)
+  for (int i = 0; i < 4096 + 1; i++)
   {
     EEPROM.write(i, 0);
   }
