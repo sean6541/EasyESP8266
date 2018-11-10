@@ -6,7 +6,6 @@
     - ESPAsyncWebServer: https://github.com/me-no-dev/ESPAsyncWebServer
     - ArduinoJson: https://github.com/bblanchon/ArduinoJson
     - rBase64: https://github.com/boseji/rBASE64
-    - EEPROMJson: https://github.com/sean6541/EEPROMJson
 */
 #include <Arduino.h>
 #include <Reactduino.h>
@@ -16,7 +15,7 @@
 #include <ArduinoJson.h>
 #include <rBase64.h>
 #include <FS.h>
-#include <EEPROMJson.h>
+#include <EEPROM.h>
 
 extern void set();
 String system_username = "";
@@ -24,9 +23,45 @@ String system_password = "";
 String new_ssid = "";
 String new_psk = "";
 
-EEPROMJson eejs(512);
 AsyncWebServer server(80);
 AsyncStaticWebHandler& static_srv(server.serveStatic("/", SPIFFS, "/www/"));
+
+void loadConfig() {
+  EEPROM.begin(4096);
+  String eeprom_string;
+  for (int i = 0; i < _size; ++i) {
+    char eeprom_string_char = char(EEPROM.read(i));
+    if (eeprom_string_char != 0) {
+      eeprom_string += eeprom_string_char;
+    } else {
+      break;
+    }
+  }
+  EEPROM.end();
+  if (eeprom_string.length() > 1) {
+    system_username = eeprom_string.substring(0, eeprom_string.indexOf(":"));
+    system_password = eeprom_string.substring(eeprom_string.indexOf(":") + 1);
+  }
+}
+
+void clearConfig() {
+  EEPROM.begin(4096);
+  for (int i = 0; i < _size + 1; i++)
+  {
+    EEPROM.write(i, 0);
+  }
+  EEPROM.end();
+}
+
+void saveConfig() {
+  EEPROM.begin(4096);
+  String eeprom_string = system_username + String(":") + system_password;
+  for (int i = 0; i < eeprom_string.length(); ++i) {
+    EEPROM.write(i, eeprom_string[i]);
+  }
+  EEPROM.write(eeprom_string.length(), byte(0));
+  EEPROM.end();
+}
 
 void wifiSTA() {
   WiFi.softAPdisconnect();
@@ -92,13 +127,7 @@ bool checkAuth(AsyncWebServerRequest * request) {
 
 Reactduino app([] () {
   SPIFFS.begin();
-  JsonObject& eejson = eejs.getJson();
-  JsonVariant _system_username = eejson["system"]["username"];
-  JsonVariant _system_password = eejson["system"]["password"];
-  if (_system_username.success() && _system_password.success()) {
-    system_username = _system_username.as<String>();
-    system_password = _system_password.as<String>();
-  }
+  loadConfig();
   WiFi.begin();
   app.delay(6000, wifiCheck);
   server.on("/setup", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
@@ -109,10 +138,7 @@ Reactduino app([] () {
     if (_system_username.success() && _system_password.success()) {
       system_username = _system_username.as<String>();
       system_password = _system_password.as<String>();
-      JsonObject& eejson = eejs.getJson();
-      eejson["system"]["username"] = system_username;
-      eejson["system"]["password"] = system_password;
-      eejs.setJson(eejson);
+      saveConfig();
       if (system_username != "" && system_password != "") {
         static_srv.setAuthentication(system_username.c_str(), system_password.c_str());
       }
@@ -139,10 +165,7 @@ Reactduino app([] () {
     if (_system_username.success() && _system_password.success()) {
       system_username = _system_username.as<String>();
       system_password = _system_password.as<String>();
-      JsonObject& eejson = eejs.getJson();
-      eejson["system"]["username"] = system_username;
-      eejson["system"]["password"] = system_password;
-      eejs.setJson(eejson);
+      saveConfig();
       if (system_username != "" && system_password != "") {
         static_srv.setAuthentication(system_username.c_str(), system_password.c_str());
       }
@@ -172,7 +195,7 @@ Reactduino app([] () {
       return;
     }
     request->send(200);
-    eejs.clear();
+    clearConfig();
     app.delay(2000, wifiReset);
   });
   static_srv.setDefaultFile("index.html");
