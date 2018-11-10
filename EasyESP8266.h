@@ -27,9 +27,9 @@ AsyncWebServer server(80);
 AsyncStaticWebHandler& static_srv(server.serveStatic("/", SPIFFS, "/www/"));
 
 void loadConfig() {
-  EEPROM.begin(4096);
+  EEPROM.begin(512);
   String eeprom_string;
-  for (int i = 0; i < 4096; ++i) {
+  for (int i = 0; i < 512; i++) {
     char eeprom_string_char = char(EEPROM.read(i));
     if (eeprom_string_char != 0) {
       eeprom_string += eeprom_string_char;
@@ -45,8 +45,8 @@ void loadConfig() {
 }
 
 void clearConfig() {
-  EEPROM.begin(4096);
-  for (int i = 0; i < 4096 + 1; i++)
+  EEPROM.begin(512);
+  for (int i = 0; i < 512 + 1; i++)
   {
     EEPROM.write(i, 0);
   }
@@ -54,9 +54,9 @@ void clearConfig() {
 }
 
 void saveConfig() {
-  EEPROM.begin(4096);
+  EEPROM.begin(512);
   String eeprom_string = system_username + String(":") + system_password;
-  for (int i = 0; i < eeprom_string.length(); ++i) {
+  for (int i = 0; i < eeprom_string.length(); i++) {
     EEPROM.write(i, eeprom_string[i]);
   }
   EEPROM.write(eeprom_string.length(), byte(0));
