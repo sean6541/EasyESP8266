@@ -1,0 +1,32 @@
+body {
+  margin: 0px;
+}
+
+.snglpg-title {
+  width: 100%;
+  padding: 30px;
+  background: #BDBDBD;
+}
+
+.padded {
+  padding: 30px;
+}
+
+.multipg-title {
+  margin: 35px 30px 5px 30px;
+  text-align: center;
+}
+
+@media (min-width: 992px) {
+  .snglpg-title {
+    padding: 40px;
+  }
+
+  .padded {
+    padding: 40px;
+  }
+
+  .multipg-title {
+    margin: 103px 40px 7px 40px;
+  }
+}

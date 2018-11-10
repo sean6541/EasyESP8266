@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link href="/bootstrap.min.css" rel="stylesheet">
+<link href="/styles.css" rel="stylesheet">
+<script src="/jquery-3.3.1.min.js"></script>
+<script src="/popper.min.js"></script>
+<script src="/bootstrap.min.js"></script>
+<script src="/funcs.js"></script>
+<title>Setup</title>
+</head>
+<body>
+  <div class="modal fade" id="done">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Done</h5>
+        </div>
+        <div class="modal-body">
+          <p>Setup Complete</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+        </div>
+      </div>
+    </div>
+  </div>
+<div class="padded">
+  <div class="card" style="width: 100%; max-width: 600px; margin: auto;">
+    <h2 class="card-header">Setup</h2>
+    <div class="card-body">
+      <h5 style="padding-bottom: 10px;">System</h5>
+      <div class="form-group" id="userc">
+        <label for="user">Username</label>
+        <input class="form-control" id="user">
+      </div>
+      <div class="form-group" id="passc">
+        <label for="pass">Password</label>
+        <input type="password" class="form-control" id="pass">
+      </div>
+      <h5 style="padding-bottom: 10px;">WiFi</h5>
+      <div class="form-group" id="ssidc">
+        <label for="ssid">SSID</label>
+        <input class="form-control" id="ssid">
+      </div>
+      <div class="form-check" id="haspskc" style="margin-bottom: 13px;">
+        <input class="form-check-input" type="checkbox" id="haspsk">
+        <label class="form-check-label" for="haspsk">
+          Open
+        </label>
+      </div>
+      <div class="form-group" id="pskc">
+        <label for="psk">Password</label>
+        <input type="password" class="form-control" id="psk">
+      </div>
+    </div>
+    <div class="card-footer">
+      <button type="button" class="btn btn-primary" style="float: right;" id="save">Save</button>
+      <div style="clear: both;"></div>
+    </div>
+  </div>
+</div>
+</body>
+</html>

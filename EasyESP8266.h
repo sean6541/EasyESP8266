@@ -130,6 +130,42 @@ Reactduino app([] () {
   loadConfig();
   WiFi.begin();
   app.delay(6000, wifiCheck);
+  server.on("/setup/wifi", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!checkAuth(request)) {
+      request->send(401);
+      return;
+    }
+    DynamicJsonBuffer requJB;
+    JsonObject& requJ = requJB.parseObject(data);
+    String ssid = requJ["ssid"];
+    JsonVariant pskk = requJ["psk"];
+    new_ssid = ssid;
+    new_psk = "";
+    if (pskk.success()) {
+      new_psk = pskk.as<String>();
+    }
+    request->send(200);
+    app.delay(2000, wifiSTA);
+  });
+  server.on("/setup/auth", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+    if (!checkAuth(request)) {
+      request->send(401);
+      return;
+    }
+    DynamicJsonBuffer requJB;
+    JsonObject& requJ = requJB.parseObject(data);
+    JsonVariant _system_username = requJ["username"];
+    JsonVariant _system_password = requJ["password"];
+    if (_system_username.success() && _system_password.success()) {
+      system_username = _system_username.as<String>();
+      system_password = _system_password.as<String>();
+      saveConfig();
+      if (system_username != "" && system_password != "") {
+        static_srv.setAuthentication(system_username.c_str(), system_password.c_str());
+      }
+    }
+    request->send(200);
+  });
   server.on("/setup", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
     DynamicJsonBuffer requJB;
     JsonObject& requJ = requJB.parseObject(data);
@@ -153,41 +189,21 @@ Reactduino app([] () {
     request->send(200);
     app.delay(2000, wifiSTA);
   }).setFilter(ON_AP_FILTER);
-  server.on("/setauth", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+  server.on("/reset/wifi", HTTP_POST, [] (AsyncWebServerRequest * request) {
     if (!checkAuth(request)) {
       request->send(401);
       return;
     }
-    DynamicJsonBuffer requJB;
-    JsonObject& requJ = requJB.parseObject(data);
-    JsonVariant _system_username = requJ["username"];
-    JsonVariant _system_password = requJ["password"];
-    if (_system_username.success() && _system_password.success()) {
-      system_username = _system_username.as<String>();
-      system_password = _system_password.as<String>();
-      saveConfig();
-      if (system_username != "" && system_password != "") {
-        static_srv.setAuthentication(system_username.c_str(), system_password.c_str());
-      }
-    }
     request->send(200);
+    app.delay(2000, wifiReset);
   });
-  server.on("/connect", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
+  server.on("/reset/auth", HTTP_POST, [] (AsyncWebServerRequest * request) {
     if (!checkAuth(request)) {
       request->send(401);
       return;
     }
-    DynamicJsonBuffer requJB;
-    JsonObject& requJ = requJB.parseObject(data);
-    String ssid = requJ["ssid"];
-    JsonVariant pskk = requJ["psk"];
-    new_ssid = ssid;
-    new_psk = "";
-    if (pskk.success()) {
-      new_psk = pskk.as<String>();
-    }
     request->send(200);
-    app.delay(2000, wifiSTA);
+    clearConfig();
   });
   server.on("/reset", HTTP_POST, [] (AsyncWebServerRequest * request) {
     if (!checkAuth(request)) {
