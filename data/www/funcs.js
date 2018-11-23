@@ -9,33 +9,31 @@ window.onload = function() {
       $('#pskc').show();
     }
   });
-  $('#save').on('click', function() {
+  $('#connect').on('click', function() {
     $(this).prop('disabled', 'disabled');
-    $(this).text('Saving...');
-    user = $('#user').val();
-    pass = $('#pass').val();
+    $(this).text('Connecting...');
     ssid = $('#ssid').val();
     if(enc) {
       psk = $('#psk').val();
       $.ajax({
         type: 'POST',
-        url: '/setup',
+        url: '/connect',
         contentType: 'application/json',
-        data: JSON.stringify({system: {username: user, password: pass}, wifi: {ssid: ssid, psk: psk}}),
+        data: JSON.stringify({ssid: ssid, psk: psk}),
       }).done(function() {
-        $('#save').text('Save');
-        $('#save').removeAttr('disabled');
+        $('#connect').text('Connect');
+        $('#connect').removeAttr('disabled');
         $('#done').modal('show');
       });
     } else {
       $.ajax({
         type: 'POST',
-        url: '/setup',
+        url: '/connect',
         contentType: 'application/json',
-        data: JSON.stringify({system: {username: user, password: pass}, wifi: {ssid: ssid}}),
+        data: JSON.stringify({ssid: ssid}),
       }).done(function() {
-        $('#save').text('Save');
-        $('#save').removeAttr('disabled');
+        $('#connect').text('Connect');
+        $('#connect').removeAttr('disabled');
         $('#done').modal('show');
       });
     }
