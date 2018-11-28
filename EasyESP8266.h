@@ -12,7 +12,9 @@
 #include <ESPAsyncWebServer.h>
 #include <AsyncJson.h>
 #include <ArduinoJson.h>
+#if HAS_WWW
 #include <FS.h>
+#endif
 
 extern void set();
 String new_ssid = "";
@@ -64,7 +66,6 @@ void wifiCheck() {
 }
 
 Reactduino app([] () {
-  SPIFFS.begin();
   WiFi.begin();
   app.delay(6000, wifiCheck);
   server.on("/connect", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
@@ -84,6 +85,9 @@ Reactduino app([] () {
     request->send(200);
     app.delay(2000, wifiReset);
   });
+#if HAS_WWW
+  SPIFFS.begin();
   server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
+#endif
   set();
 });
