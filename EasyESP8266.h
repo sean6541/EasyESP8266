@@ -62,12 +62,18 @@ void wifiCheck() {
   }
 }
 
+void addJsonReqHandler(const char* uri, HTTPMethod method, ArJsonRequestHandlerFunction callback) {
+  AsyncCallbackJsonWebHandler* handler = new AsyncCallbackJsonWebHandler(uri);
+  handler->setMethod(method);
+  handler->onRequest(callback);
+  server.addHandler(handler);
+}
+
 Reactduino app([] () {
   WiFi.begin();
   app.delay(6000, wifiCheck);
-  server.on("/connect", HTTP_POST, [] (AsyncWebServerRequest * request) {}, NULL, [] (AsyncWebServerRequest * request, uint8_t *data, size_t len, size_t index, size_t total) {
-    DynamicJsonBuffer requJB;
-    JsonObject& requJ = requJB.parseObject(data);
+  addJsonReqHandler("/connect", HTTP_POST, [] (AsyncWebServerRequest * request, JsonVariant &requJV) {
+    JsonObject& requJ = requJV.as<JsonObject>();
     String ssid = requJ["ssid"];
     JsonVariant pskk = requJ["psk"];
     new_ssid = ssid;
