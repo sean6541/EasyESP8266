@@ -87,7 +87,7 @@ Reactduino app([] () {
   });
 #if HAS_WWW
   SPIFFS.begin();
-  server.serveStatic("/", SPIFFS, "/www/").setDefaultFile("index.html");
+  server.serveStatic("/", SPIFFS, "/").setDefaultFile("index.html");
 #endif
   set();
 });
