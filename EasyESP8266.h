@@ -62,7 +62,7 @@ void wifiCheck() {
   }
 }
 
-void addJsonReqHandler(const char* uri, HTTPMethod method, ArJsonRequestHandlerFunction callback) {
+void addJsonReqHandler(const char* uri, WebRequestMethodComposite method, ArJsonRequestHandlerFunction callback) {
   AsyncCallbackJsonWebHandler* handler = new AsyncCallbackJsonWebHandler(uri);
   handler->setMethod(method);
   handler->onRequest(callback);
