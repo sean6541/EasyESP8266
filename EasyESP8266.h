@@ -87,5 +87,19 @@ Reactduino app([] () {
     request->send(200);
     app.delay(2000, wifiReset);
   });
+  server.on("/update", HTTP_POST, [] (AsyncWebServerRequest * request) {
+    request->send(200);
+    ESP.restart();
+  }, [] (AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
+    if (!index) {
+      uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
+      Update.begin(maxSketchSpace);
+      Update.runAsync(true);
+      Update.write(data, len);
+      if (final) {
+        Update.end(true);
+      }
+    }
+  });
   set();
 });
