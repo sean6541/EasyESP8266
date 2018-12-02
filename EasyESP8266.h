@@ -19,6 +19,10 @@ String new_psk = "";
 
 AsyncWebServer server(80);
 
+void restart() {
+  ESP.restart();
+}
+
 void wifiSTA() {
   WiFi.softAPdisconnect();
   WiFi.disconnect();
@@ -89,16 +93,16 @@ Reactduino app([] () {
   });
   server.on("/update", HTTP_POST, [] (AsyncWebServerRequest * request) {
     request->send(200);
-    ESP.restart();
+    app.delay(2000, restart);
   }, [] (AsyncWebServerRequest *request, String filename, size_t index, uint8_t *data, size_t len, bool final) {
     if (!index) {
       uint32_t maxSketchSpace = (ESP.getFreeSketchSpace() - 0x1000) & 0xFFFFF000;
       Update.begin(maxSketchSpace);
       Update.runAsync(true);
-      Update.write(data, len);
-      if (final) {
-        Update.end(true);
-      }
+    }
+    Update.write(data, len);
+    if (final) {
+      Update.end(true);
     }
   });
   set();
