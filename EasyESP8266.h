@@ -75,7 +75,7 @@ void addJsonReqHandler(const char* uri, WebRequestMethodComposite method, ArJson
 Reactduino app([] () {
   WiFi.begin();
   app.delay(6000, wifiCheck);
-  addJsonReqHandler("/connect", HTTP_POST, [] (AsyncWebServerRequest * request, JsonVariant &requJV) {
+  addJsonReqHandler("/connect", HTTP_POST, [] (AsyncWebServerRequest * request, JsonVariant & requJV) {
     JsonObject& requJ = requJV.as<JsonObject>();
     String ssid = requJ["ssid"];
     JsonVariant pskk = requJ["psk"];
